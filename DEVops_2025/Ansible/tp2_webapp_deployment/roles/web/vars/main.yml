@@ -1,0 +1,10 @@
+app_dir: /var/www/html/covoiturage
+
+# Adresse du serveur de base de données (VM DB)
+db_host: "192.168.56.112"
+
+# Même infos que côté DB, pour générer db.php proprement
+db_name: covoit
+db_user: covoit_user
+db_password: motdepasse
+db_charset: utf8mb4

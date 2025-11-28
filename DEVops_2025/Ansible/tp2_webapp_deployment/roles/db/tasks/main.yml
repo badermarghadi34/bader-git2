@@ -1,0 +1,37 @@
+- name: Installer MariaDB et dépendances
+  apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+    state: present
+    update_cache: yes
+
+- name: Créer la base de données {{ mysql_database }}
+  community.mysql.mysql_db:
+    name: "{{ mysql_database }}"
+    state: present
+    login_user: "{{ mysql_root_user }}"
+    login_unix_socket: "{{ mysql_socket }}"
+
+- name: Créer l'utilisateur MySQL {{ mysql_app_user }}
+  community.mysql.mysql_user:
+    name: "{{ mysql_app_user }}"
+    password: "{{ mysql_app_password }}"
+    priv: "{{ mysql_database }}.*:ALL"
+    host: "{{ mysql_app_host }}"
+    state: present
+    login_user: "{{ mysql_root_user }}"
+    login_unix_socket: "{{ mysql_socket }}"
+
+- name: Copier le fichier schema.sql vers le serveur
+  copy:
+    src: covoiturage/schema.sql
+    dest: /tmp/schema.sql
+
+- name: Importer le schéma SQL dans la base {{ mysql_database }}
+  community.mysql.mysql_db:
+    name: "{{ mysql_database }}"
+    state: import
+    target: /tmp/schema.sql
+    login_user: "{{ mysql_root_user }}"
+    login_unix_socket: "{{ mysql_socket }}"

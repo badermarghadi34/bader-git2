@@ -1,0 +1,45 @@
+---
+- name: Installation et configuration de MariaDB pour l'appli covoiturage
+  hosts: db 
+  become: true
+
+  tasks:
+    - name: Installer MariaDB et dépendances
+      apt:
+        name:
+          - mariadb-server
+          - python3-pymysql
+        state: present
+        update_cache: yes
+      
+
+    - name: Créer la base de données covoit
+      community.mysql.mysql_db:
+        name: covoit
+        state: present
+        login_user: root
+        login_unix_socket: /run/mysqld/mysqld.sock 
+      tags: createbd
+
+    - name: Créer l'utilisateur MySQL covoit_user
+      community.mysql.mysql_user:
+        name: covoit_user
+        password: "motdepasse"
+        priv: "covoit.*:ALL"
+        host: "%"
+        state: present
+        login_user: root
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: Copier le fichier schema.sql vers le serveur
+      copy:
+        src: covoiturage/schema.sql
+        dest: /tmp/schema.sql
+
+    - name: Importer le schéma SQL dans la base covoit
+      community.mysql.mysql_db:
+        name: covoit
+        state: import
+        target: /tmp/schema.sql
+        login_user: root
+        login_unix_socket: /run/mysqld/mysqld.sock

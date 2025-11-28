@@ -1,0 +1,15 @@
+---
+- name: Déploiement du serveur web
+  hosts: web
+  become: true
+
+  roles:
+    - web
+
+- name: Déploiement de la base de données
+  hosts: db
+  become: true
+
+  roles:
+    - db
+

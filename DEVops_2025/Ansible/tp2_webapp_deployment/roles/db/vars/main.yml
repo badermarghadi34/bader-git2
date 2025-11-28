@@ -1,0 +1,6 @@
+mysql_root_user: root
+mysql_app_user: covoit_user
+mysql_app_password: motdepasse
+mysql_database: covoit
+mysql_app_host: "%"
+mysql_socket: /run/mysqld/mysqld.sock
